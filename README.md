@@ -15,7 +15,7 @@ LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für di
 - Optional per Kontrollkästchen eine M3U-Playlist im Albumordner erstellen; standardmäßig deaktiviert und erst nach dem Rippen geschrieben
 - CD in einem zusammenhängenden Lesevorgang auslesen, statt `cdparanoia` für jeden Titel neu zu starten
 - MP3-Qualität mit 320, 256 oder 192 kbit/s auswählen
-- CD-Informationen automatisch über GNUDB abfragen, sofern ein passender Eintrag vorhanden und der Dienst erreichbar ist
+- CD-Informationen automatisch über einen cddb Anbieter abfragen, sofern ein passender Eintrag vorhanden und der Dienst erreichbar ist
 - Albumdaten manuell eingeben und Metadaten über MusicBrainz suchen
 - Online-Cover aus dem Cover Art Archive ansehen und gezielt auswählen
 - Eigenes Cover (JPEG, PNG oder WebP) verwenden oder ausdrücklich ohne Cover rippen
