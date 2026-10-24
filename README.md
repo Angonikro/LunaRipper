@@ -1,10 +1,6 @@
-# LunaRipper 0.3.3
+# LunaRipper 0.3.4
 
 LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für die Oberfläche, `cdparanoia` zum Auslesen der Audio-CD und LAME zur MP3-Erstellung.
-
-![LunaRipper](lunaripper.png)
-
-[Github Seite](https://github.com/Angonikro/LunaRipper/)
 
 ## Funktionen
 
@@ -15,7 +11,7 @@ LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für di
 - Optional per Kontrollkästchen eine M3U-Playlist im Albumordner erstellen; standardmäßig deaktiviert und erst nach dem Rippen geschrieben
 - CD in einem zusammenhängenden Lesevorgang auslesen, statt `cdparanoia` für jeden Titel neu zu starten
 - MP3-Qualität mit 320, 256 oder 192 kbit/s auswählen
-- CD-Informationen automatisch über einen cddb Anbieter abfragen, sofern ein passender Eintrag vorhanden und der Dienst erreichbar ist
+- CD-Informationen automatisch über cddb abfragen, sofern ein passender Eintrag vorhanden und der Dienst erreichbar ist
 - Albumdaten manuell eingeben und Metadaten über MusicBrainz suchen
 - Online-Cover aus dem Cover Art Archive ansehen und gezielt auswählen
 - Eigenes Cover (JPEG, PNG oder WebP) verwenden oder ausdrücklich ohne Cover rippen
@@ -60,7 +56,7 @@ Normalerweise muss dafür nichts in `lunaripper.py` geändert werden. Nur bei ei
 
 ## Metadaten und Cover
 
-Die automatische CD-Erkennung verwendet GNUDB über das CDDB-kompatible Protokoll. Ein Treffer ist nicht für jede CD garantiert. Die Verbindung kann außerdem von der Erreichbarkeit des Servers und den in den CDDB-Einstellungen hinterlegten Werten abhängen.
+Die automatische CD-Erkennung verwendet cddb über das CDDB-kompatible Protokoll. Ein Treffer ist nicht für jede CD garantiert. Die Verbindung kann außerdem von der Erreichbarkeit des Servers und den in den CDDB-Einstellungen hinterlegten Werten abhängen.
 
 MusicBrainz wird für die Suche anhand manuell eingegebener Interpret- und Albumdaten verwendet. Cover werden über das Cover Art Archive gesucht und vor dem Übernehmen zur Auswahl angezeigt. Eine Internetverbindung ist für diese Funktionen erforderlich.
 
@@ -75,5 +71,14 @@ Unter **Einstellungen → Lesefehler** können zusätzliche Leseversuche eingest
 - Eine Audio-CD muss eingelegt sein.
 - Der angemeldete Benutzer benötigt gegebenenfalls Berechtigungen für den Zugriff auf das optische Laufwerk.
 - Vorhandene MP3-Dateien werden nicht überschrieben.
+- Vor einer Veröffentlichung sollten die Funktionen mit einem echten CD-Laufwerk getestet werden.
 
-73 de DO2QG Andreas
+## Desktoplauncher erstellen
+
+Nach der Installation von LunaRipper kann ein Symbol auf dem Desktop angelegt werden:
+
+```bash
+./install_desktop_launcher.sh
+```
+
+Das Skript erstellt `LunaRipper.desktop` im konfigurierten Desktop-Ordner (normalerweise `~/Desktop`). Der Startmenü-Eintrag wird bei der DEB-Installation ebenfalls eingerichtet.
