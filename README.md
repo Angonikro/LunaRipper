@@ -2,6 +2,10 @@
 
 LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für die Oberfläche, `cdparanoia` zum Auslesen der Audio-CD und LAME zur MP3-Erstellung.
 
+![LunaRipper](lunaripper.png)
+
+[Github Seite](https://github.com/Angonikro/LunaRipper/)
+
 ## Funktionen
 
 - Optische Laufwerke unter `/dev/sr*` automatisch erkennen, zum Beispiel `/dev/sr0` oder `/dev/sr1
@@ -82,3 +86,5 @@ Nach der Installation von LunaRipper kann ein Symbol auf dem Desktop angelegt we
 ```
 
 Das Skript erstellt `LunaRipper.desktop` im konfigurierten Desktop-Ordner (normalerweise `~/Desktop`). Der Startmenü-Eintrag wird bei der DEB-Installation ebenfalls eingerichtet.
+
+73 de DO2QG Andreas
