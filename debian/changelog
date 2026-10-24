@@ -1,7 +1,26 @@
 lunaripper (0.3.4) unstable; urgency=medium
 
-  * Version bump based on 0.3.3 with desktop launcher support retained.
-  * Keep M3U setting and existing ripping behavior unchanged.
+  * Add a working desktop launcher that references the installed or bundled LunaRipper icon.
+  * Install the SVG icon and desktop launcher helper in the Debian package.
+  * Update the application version display and user agent to 0.3.4.
 
- -- LunaRipper contributors <noreply@example.invalid>  Sat, 24 Oct 2026 18:30:00 +0200
+ -- LunaRipper contributors <noreply@example.com>  Sat, 24 Oct 2026 20:00:00 +0200
 
+lunaripper (0.3.3) unstable; urgency=medium
+
+  * Persist the M3U playlist preference in settings.json across restarts.
+
+ -- LunaRipper contributors <noreply@example.com>  Sat, 24 Oct 2026 03:30:00 +0200
+
+lunaripper (0.3.1) unstable; urgency=medium
+
+  * Add a button to eject the currently selected CD drive.
+  * Add eject as a package dependency and update release metadata.
+
+ -- LunaRipper contributors <noreply@example.com>  Sat, 24 Oct 2026 02:00:00 +0200
+
+lunaripper (0.3.0) unstable; urgency=medium
+
+  * Release 0.3.0 based on 0.2.22.
+
+ -- LunaRipper contributors  Sat, 24 Oct 2026 00:00:00 +0200

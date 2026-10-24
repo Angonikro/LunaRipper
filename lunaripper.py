@@ -16,8 +16,8 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib, Gio, Gdk
 from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TDRC, APIC
 
-APP_VERSION = '0.3.3'
-USER_AGENT = 'LunaRipper/0.3.3 (GTK audio CD ripper)'
+APP_VERSION = '0.3.4'
+USER_AGENT = 'LunaRipper/0.3.4 (GTK audio CD ripper)'
 
 TRANSLATIONS = {
     'en': {

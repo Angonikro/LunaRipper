@@ -5,13 +5,20 @@ ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 PKG="$WORK/lunaripper"
-install -d "$PKG/DEBIAN" "$PKG/usr/bin" "$PKG/usr/share/lunaripper" "$PKG/usr/share/applications" "$PKG/usr/share/icons/hicolor/scalable/apps"
+install -d "$PKG/DEBIAN" "$PKG/usr/bin" "$PKG/usr/share/lunaripper/scripts" "$PKG/usr/share/applications" "$PKG/usr/share/icons/hicolor/scalable/apps"
 install -m 755 "$ROOT/lunaripper.py" "$PKG/usr/share/lunaripper/lunaripper.py"
+install -m 755 "$ROOT/scripts/create_desktop_entry.sh" "$PKG/usr/share/lunaripper/scripts/create_desktop_entry.sh"
+install -m 644 "$ROOT/lunaripper.svg" "$PKG/usr/share/lunaripper/lunaripper.svg"
 cat > "$PKG/usr/bin/lunaripper" <<'EOF'
 #!/bin/sh
 exec /usr/bin/python3 /usr/share/lunaripper/lunaripper.py "$@"
 EOF
 chmod 755 "$PKG/usr/bin/lunaripper"
+cat > "$PKG/usr/bin/lunaripper-desktop-launcher" <<'EOF'
+#!/bin/sh
+exec /usr/share/lunaripper/scripts/create_desktop_entry.sh "$@"
+EOF
+chmod 755 "$PKG/usr/bin/lunaripper-desktop-launcher"
 cat > "$PKG/usr/share/applications/lunaripper.desktop" <<'EOF'
 [Desktop Entry]
 Name=LunaRipper
@@ -22,9 +29,7 @@ Terminal=false
 Type=Application
 Categories=AudioVideo;Audio;
 EOF
-cat > "$PKG/usr/share/icons/hicolor/scalable/apps/lunaripper.svg" <<'EOF'
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="8" y="8" width="112" height="112" rx="24" fill="#253858"/><circle cx="64" cy="64" r="38" fill="#dce6f2"/><circle cx="64" cy="64" r="13" fill="#253858"/><circle cx="64" cy="64" r="4" fill="#dce6f2"/><path d="M64 26 A38 38 0 0 1 102 64" fill="none" stroke="#6bc4a6" stroke-width="5"/></svg>
-EOF
+install -m 644 "$ROOT/lunaripper.svg" "$PKG/usr/share/icons/hicolor/scalable/apps/lunaripper.svg"
 cat > "$PKG/DEBIAN/control" <<EOF
 Package: lunaripper
 Version: $VERSION

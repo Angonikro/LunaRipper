@@ -1,5 +1,5 @@
 ## 0.3.4
-- Desktoplauncher hinzugefügt
+- Desktop Launcher hinzugefügt
 
 ## 0.3.3
 - Save and restore the M3U playlist checkbox in `~/.config/lunaripper/settings.json`.
@@ -55,8 +55,3 @@
 
 ## 0.2.16
 - CDDB-Anbieterauswahl bereinigt.
-
-## 0.3.4
-- Neue Versionsnummer auf Basis von 0.3.3.
-- Desktoplauncher und Startmenü-Eintrag bleiben enthalten.
-- Bestehende M3U-Einstellung und Rippen-Funktion wurden nicht gezielt verändert.
