@@ -9,7 +9,6 @@
 - Ausgabeformat MP3, WAV oder MP3 + WAV hinzugefügt; Auswahl wird in den Einstellungen gespeichert.
 - WAV-Dateien werden ohne zusätzlichen Encoder aus dem CD-Audio-Ausleseergebnis übernommen.
 - M3U-Playlist verwendet bei WAV-Ausgabe WAV-Dateien, sonst MP3-Dateien.
-- Keine neuen Software-Abhängigkeiten.
 
 ## 0.3.4
 - Desktop Launcher hinzugefügt
