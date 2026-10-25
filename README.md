@@ -2,6 +2,10 @@
 
 LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für die Oberfläche, `cdparanoia` zum Auslesen der Audio-CD, LAME zur MP3-Erstellung, `oggenc` aus `vorbis-tools` für OGG Vorbis und `ffmpeg` mit AAC-Unterstützung für M4A. WAV wird direkt aus den ausgelesenen CD-Audiodaten übernommen. Die Ausgabeauswahl enthält MP3, OGG, M4A, WAV und die gewünschten Kombinationen.
 
+![LunaRipper](lunaripper.png)
+
+[Github Seite](https://github.com/Angonikro/LunaRipper/)
+
 ## Funktionen
 
 - Optische Laufwerke unter `/dev/sr*` automatisch erkennen, zum Beispiel `/dev/sr0` oder `/dev/sr1
@@ -88,3 +92,5 @@ Unter **Einstellungen → Lesefehler** können zusätzliche Leseversuche eingest
 - Eine Audio-CD muss eingelegt sein.
 - Der angemeldete Benutzer benötigt gegebenenfalls Berechtigungen für den Zugriff auf das optische Laufwerk.
 - Vorhandene Ausgabedateien werden nicht überschrieben.
+
+73 de DO2QG Andreas
