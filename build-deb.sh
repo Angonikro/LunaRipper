@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-VERSION=0.3.4
+VERSION=0.3.5
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
@@ -36,9 +36,9 @@ Version: $VERSION
 Section: sound
 Priority: optional
 Architecture: all
-Depends: python3, python3-gi, gir1.2-gtk-4.0, python3-mutagen, cdparanoia, cd-discid, lame, eject
+Depends: python3, python3-gi, gir1.2-gtk-4.0, python3-mutagen, cdparanoia, cd-discid, lame, eject, vorbis-tools, ffmpeg
 Maintainer: LunaRipper contributors
-Description: Audio-CD-Ripper mit Metadaten und MP3-Ausgabe
- LunaRipper liest Audio-CDs aus und speichert Tracks als MP3.
+Description: Audio-CD-Ripper mit Metadaten und MP3/OGG/M4A/WAV-Ausgabe
+ LunaRipper liest Audio-CDs aus und speichert Tracks als MP3, OGG, M4A, WAV oder in Kombinationen.
 EOF
 dpkg-deb --root-owner-group --build "$PKG" "$ROOT/lunaripper_${VERSION}_all.deb"

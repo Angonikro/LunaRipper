@@ -8,6 +8,6 @@ Rules-Requires-Root: no
 
 Package: lunaripper
 Architecture: all
-Depends: ${misc:Depends}, python3, python3-gi, gir1.2-gtk-4.0, python3-mutagen, cdparanoia, cd-discid, lame, eject
-Description: Audio-CD-Ripper mit Metadaten und MP3-Ausgabe
- LunaRipper liest Audio-CDs aus und speichert Tracks als MP3.
+Depends: ${misc:Depends}, python3, python3-gi, gir1.2-gtk-4.0, python3-mutagen, cdparanoia, cd-discid, lame, eject, vorbis-tools, ffmpeg
+Description: Audio-CD-Ripper mit Metadaten und MP3/OGG/M4A/WAV-Ausgabe
+ LunaRipper liest Audio-CDs aus und speichert Tracks als MP3, OGG, M4A, WAV oder in Kombinationen.

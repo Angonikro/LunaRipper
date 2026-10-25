@@ -1,3 +1,16 @@
+## 0.3.5
+
+- Ausgabeauswahl in der bestätigten Reihenfolge: MP3, OGG, M4A, WAV, OGG + WAV, MP3 + WAV, M4A + WAV, MP3 + OGG, OGG + M4A, MP3 + M4A, MP3 + WAV + OGG, OGG + WAV + M4A, MP3 + WAV + M4A, MP3 + OGG + M4A, MP3 + OGG + WAV + M4A.
+- M4A/AAC-Ausgabe über `ffmpeg`, inklusive MP4-Metadaten und Cover.
+- Neue Laufzeitabhängigkeit `ffmpeg` dokumentiert und im DEB eingetragen; APT installiert sie automatisch.
+- Ausgabeformate um OGG Vorbis und alle gewünschten Formatkombinationen erweitert. Reihenfolge: MP3, OGG, WAV, OGG + WAV, MP3 + WAV, MP3 + OGG, MP3 + WAV + OGG.
+- OGG-Metadaten für Titel, Interpret, Album, Tracknummer und Jahr werden geschrieben.
+- Neue Abhängigkeit: `vorbis-tools` (stellt `oggenc` bereit); Installationsanleitung und Debian-Abhängigkeiten aktualisiert.
+- Ausgabeformat MP3, WAV oder MP3 + WAV hinzugefügt; Auswahl wird in den Einstellungen gespeichert.
+- WAV-Dateien werden ohne zusätzlichen Encoder aus dem CD-Audio-Ausleseergebnis übernommen.
+- M3U-Playlist verwendet bei WAV-Ausgabe WAV-Dateien, sonst MP3-Dateien.
+- Keine neuen Software-Abhängigkeiten.
+
 ## 0.3.4
 - Desktop Launcher hinzugefügt
 

@@ -5,6 +5,7 @@ import re
 import json
 import glob
 import subprocess
+import shutil
 import threading
 import tempfile
 import urllib.parse
@@ -15,9 +16,11 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib, Gio, Gdk
 from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TDRC, APIC
+from mutagen.oggvorbis import OggVorbis
+from mutagen.mp4 import MP4, MP4Cover
 
-APP_VERSION = '0.3.4'
-USER_AGENT = 'LunaRipper/0.3.4 (GTK audio CD ripper)'
+APP_VERSION = '0.3.5'
+USER_AGENT = 'LunaRipper/0.3.5 (GTK audio CD ripper)'
 
 TRANSLATIONS = {
     'en': {
@@ -163,6 +166,7 @@ class LunaRipper(Gtk.Application):
         self.ignore_read_errors = False
         self.read_retries = 3
         self.create_m3u = False
+        self.output_format = 'mp3'
         self.load_settings()
         self.refresh_devices()
         self._css_provider = None
@@ -191,6 +195,10 @@ class LunaRipper(Gtk.Application):
                 self.read_retries = data['read_retries']
             if isinstance(data.get('create_m3u'), bool):
                 self.create_m3u = data['create_m3u']
+            if data.get('output_format') in ('mp3', 'ogg', 'm4a', 'wav', 'ogg_wav', 'mp3_wav', 'm4a_wav', 'mp3_ogg', 'ogg_m4a', 'mp3_m4a', 'mp3_wav_ogg', 'ogg_wav_m4a', 'mp3_wav_m4a', 'mp3_ogg_m4a', 'mp3_ogg_wav_m4a'):
+                self.output_format = data['output_format']
+            elif data.get('output_format') == 'both':
+                self.output_format = 'mp3_wav'
             if data.get('cddb_provider') in ('gnudb', 'musicbrainz', 'freac', 'dbpoweramp'):
                 # Only keep the two providers that remain available in the UI.
                 self.cddb_provider = data['cddb_provider'] if data['cddb_provider'] in ('freac', 'dbpoweramp') else 'dbpoweramp'
@@ -222,6 +230,7 @@ class LunaRipper(Gtk.Application):
             'ignore_read_errors': self.ignore_read_errors,
             'read_retries': self.read_retries,
             'create_m3u': self.create_m3u,
+            'output_format': self.output_format,
             'cddb_provider': self.cddb_provider,
             'cddb_server': self.cddb_server,
             'cddb_path': self.cddb_path,
@@ -496,6 +505,12 @@ class LunaRipper(Gtk.Application):
         self.quality.set_selected(self.quality_index)
         self.quality.connect('notify::selected', self.on_quality_changed)
         bottom.append(Gtk.Label(label=self.tr('MP3-Qualität:'))); bottom.append(self.quality)
+        bottom.append(Gtk.Label(label='Ausgabe:' if self.language == 'de' else 'Output:'))
+        self.output_formats = ['mp3', 'ogg', 'm4a', 'wav', 'ogg_wav', 'mp3_wav', 'm4a_wav', 'mp3_ogg', 'ogg_m4a', 'mp3_m4a', 'mp3_wav_ogg', 'ogg_wav_m4a', 'mp3_wav_m4a', 'mp3_ogg_m4a', 'mp3_ogg_wav_m4a']
+        self.output_dropdown = Gtk.DropDown.new_from_strings(['MP3', 'OGG', 'M4A', 'WAV', 'OGG + WAV', 'MP3 + WAV', 'M4A + WAV', 'MP3 + OGG', 'OGG + M4A', 'MP3 + M4A', 'MP3 + WAV + OGG', 'OGG + WAV + M4A', 'MP3 + WAV + M4A', 'MP3 + OGG + M4A', 'MP3 + OGG + WAV + M4A'])
+        self.output_dropdown.set_selected(self.output_formats.index(self.output_format) if self.output_format in self.output_formats else 0)
+        self.output_dropdown.connect('notify::selected', self.on_output_format_changed)
+        bottom.append(self.output_dropdown)
         self.m3u_checkbox = Gtk.CheckButton(label=self.tr('M3U-Playlist erstellen'))
         self.m3u_checkbox.set_active(self.create_m3u)
         self.m3u_checkbox.connect('toggled', self.on_m3u_toggled)
@@ -1320,6 +1335,12 @@ class LunaRipper(Gtk.Application):
         dialog.connect('response', response_cb)
         dialog.present()
 
+    def on_output_format_changed(self, dropdown, _pspec):
+        formats = ['mp3', 'ogg', 'm4a', 'wav', 'ogg_wav', 'mp3_wav', 'm4a_wav', 'mp3_ogg', 'ogg_m4a', 'mp3_m4a', 'mp3_wav_ogg', 'ogg_wav_m4a', 'mp3_wav_m4a', 'mp3_ogg_m4a', 'mp3_ogg_wav_m4a']
+        index = dropdown.get_selected()
+        self.output_format = formats[index] if 0 <= index < len(formats) else 'mp3'
+        self.save_settings()
+
     def on_m3u_toggled(self, checkbox):
         self.create_m3u = checkbox.get_active()
         self.save_settings()
@@ -1346,7 +1367,7 @@ class LunaRipper(Gtk.Application):
         self.cancel_requested.clear()
         self.rip_button.set_sensitive(False); self.cancel_button.set_sensitive(True)
         self.scan_button.set_sensitive(False); self.lookup_button.set_sensitive(False)
-        threading.Thread(target=self.rip_worker, args=(selected, root, artist, album, self.year_entry.get_text().strip(), bitrate, device, self.ignore_read_errors, self.read_retries, self.create_m3u), daemon=True).start()
+        threading.Thread(target=self.rip_worker, args=(selected, root, artist, album, self.year_entry.get_text().strip(), bitrate, device, self.ignore_read_errors, self.read_retries, self.create_m3u, self.output_format), daemon=True).start()
 
     def on_cancel_rip(self, *_args):
         if not self.ripping:
@@ -1396,7 +1417,7 @@ class LunaRipper(Gtk.Application):
         finally:
             self.current_process = None
 
-    def rip_worker(self, selected, root, artist, album, year, bitrate, device, ignore_read_errors=False, read_retries=3, create_m3u=False):
+    def rip_worker(self, selected, root, artist, album, year, bitrate, device, ignore_read_errors=False, read_retries=3, create_m3u=False, output_format='mp3'):
         album_dir = root / f'{clean_name(artist)} - {clean_name(album)}'
         try:
             root.mkdir(parents=True, exist_ok=True)
@@ -1498,42 +1519,124 @@ class LunaRipper(Gtk.Application):
                     number = int(track['number'])
                     title = track.get('title') or f'Titel {number:02d}'
                     safe_title = clean_name(title, f'Titel {number:02d}')
-                    out_mp3 = album_dir / f'{number:02d} - {safe_title}.mp3'
-                    wav = read_dir / f'track{number:02d}.cdda.wav'
-                    if out_mp3.exists():
-                        self.set_status(f'Übersprungen, Datei existiert bereits: {out_mp3.name}')
+                    stem = f'{number:02d} - {safe_title}'
+                    out_mp3 = album_dir / f'{stem}.mp3'
+                    out_wav = album_dir / f'{stem}.wav'
+                    source_wav = read_dir / f'track{number:02d}.cdda.wav'
+                    formats = set(output_format.split('_'))
+                    need_mp3 = 'mp3' in formats
+                    need_wav = 'wav' in formats
+                    need_ogg = 'ogg' in formats
+                    need_m4a = 'm4a' in formats
+                    out_ogg = album_dir / f'{stem}.ogg'
+                    out_m4a = album_dir / f'{stem}.m4a'
+                    mp3_done = out_mp3.is_file() and out_mp3.stat().st_size > 0
+                    wav_done = out_wav.is_file() and out_wav.stat().st_size > 44
+                    ogg_done = out_ogg.is_file() and out_ogg.stat().st_size > 0
+                    m4a_done = out_m4a.is_file() and out_m4a.stat().st_size > 0
+                    if (not need_mp3 or mp3_done) and (not need_wav or wav_done) and (not need_ogg or ogg_done) and (not need_m4a or m4a_done):
+                        self.set_status(f'Übersprungen, Ausgabedateien existieren bereits: {stem}')
                         GLib.idle_add(self.progress.set_fraction, index / total)
                         continue
-                    if not wav.is_file() or wav.stat().st_size <= 44:
+                    if not source_wav.is_file() or source_wav.stat().st_size <= 44:
                         raise RuntimeError(f'Titel {number:02d} wurde nicht lesbar erzeugt.')
-                    self.set_status(f'Kodiere Titel {number:02d} ({index}/{total}) zu MP3 …')
-                    partial_mp3 = out_mp3.with_name(out_mp3.name + '.part')
-                    try:
-                        partial_mp3.unlink(missing_ok=True)
-                        enc = self._run_cancellable(['lame', '-b', bitrate, str(wav), str(partial_mp3)], timeout=300)
-                        if enc is None:
-                            raise RuntimeError('Rippen abgebrochen.')
-                        if enc.returncode != 0 or not partial_mp3.exists() or partial_mp3.stat().st_size == 0:
-                            raise RuntimeError(f'MP3-Kodierung von Titel {number} fehlgeschlagen: {(enc.stderr or enc.stdout)[-400:]}')
-                        partial_mp3.replace(out_mp3)
-                    finally:
-                        partial_mp3.unlink(missing_ok=True)
-                    try:
-                        tags = ID3()
-                        tags.add(TIT2(encoding=3, text=title))
-                        tags.add(TPE1(encoding=3, text=artist))
-                        tags.add(TALB(encoding=3, text=album))
-                        tags.add(TRCK(encoding=3, text=str(number)))
-                        if year: tags.add(TDRC(encoding=3, text=year))
-                        if self.cover_bytes:
-                            mime = 'image/png' if self.cover_bytes.startswith(b'\x89PNG\r\n\x1a\n') else ('image/webp' if self.cover_bytes.startswith(b'RIFF') and self.cover_bytes[8:12] == b'WEBP' else 'image/jpeg')
-                            tags.add(APIC(encoding=3, mime=mime, type=3, desc='Cover', data=self.cover_bytes))
-                        tags.save(out_mp3)
-                    except Exception as tag_exc:
-                        self.set_status(f'MP3 erstellt, aber ID3-Tags konnten nicht vollständig geschrieben werden: {tag_exc}')
+                    if need_wav and not wav_done:
+                        partial_wav = out_wav.with_name(out_wav.name + '.part')
+                        try:
+                            partial_wav.unlink(missing_ok=True)
+                            shutil.copyfile(source_wav, partial_wav)
+                            if partial_wav.stat().st_size <= 44:
+                                raise RuntimeError(f'WAV-Kopie von Titel {number} ist leer oder unvollständig.')
+                            partial_wav.replace(out_wav)
+                        finally:
+                            partial_wav.unlink(missing_ok=True)
+                    if need_ogg and not ogg_done:
+                        if not shutil.which('oggenc'):
+                            raise RuntimeError('Für OGG-Ausgabe fehlt oggenc. Bitte das Paket vorbis-tools installieren (sudo apt install vorbis-tools).')
+                        self.set_status(f'Kodiere Titel {number:02d} ({index}/{total}) zu OGG …')
+                        partial_ogg = out_ogg.with_name(out_ogg.name + '.part')
+                        try:
+                            partial_ogg.unlink(missing_ok=True)
+                            enc = self._run_cancellable(['oggenc', '-q', '6', '-o', str(partial_ogg), str(source_wav)], timeout=300)
+                            if enc is None:
+                                raise RuntimeError('Rippen abgebrochen.')
+                            if enc.returncode != 0 or not partial_ogg.exists() or partial_ogg.stat().st_size == 0:
+                                raise RuntimeError(f'OGG-Kodierung von Titel {number} fehlgeschlagen: {(enc.stderr or enc.stdout)[-400:]}')
+                            partial_ogg.replace(out_ogg)
+                        finally:
+                            partial_ogg.unlink(missing_ok=True)
+                        try:
+                            ogg_tags = OggVorbis(str(out_ogg))
+                            ogg_tags['title'] = title
+                            ogg_tags['artist'] = artist
+                            ogg_tags['album'] = album
+                            ogg_tags['tracknumber'] = str(number)
+                            if year:
+                                ogg_tags['date'] = year
+                            ogg_tags.save()
+                        except Exception as tag_exc:
+                            self.set_status(f'OGG erstellt, aber Metadaten konnten nicht vollständig geschrieben werden: {tag_exc}')
+                    if need_m4a and not m4a_done:
+                        if not shutil.which('ffmpeg'):
+                            raise RuntimeError('Für M4A-Ausgabe fehlt ffmpeg. Bitte das Paket installieren (sudo apt install ffmpeg).')
+                        self.set_status(f'Kodiere Titel {number:02d} ({index}/{total}) zu M4A …')
+                        partial_m4a = out_m4a.with_name(out_m4a.name + '.part.m4a')
+                        try:
+                            partial_m4a.unlink(missing_ok=True)
+                            enc = self._run_cancellable(['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-y', '-i', str(source_wav), '-vn', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', str(partial_m4a)], timeout=600)
+                            if enc is None:
+                                raise RuntimeError('Rippen abgebrochen.')
+                            if enc.returncode != 0 or not partial_m4a.exists() or partial_m4a.stat().st_size == 0:
+                                raise RuntimeError(f'M4A-Kodierung von Titel {number} fehlgeschlagen: {((enc.stderr or enc.stdout) or "ffmpeg ohne Fehlertext")[-400:]}')
+                            partial_m4a.replace(out_m4a)
+                        finally:
+                            partial_m4a.unlink(missing_ok=True)
+                        try:
+                            tags = MP4(str(out_m4a))
+                            tags['\xa9nam'] = title
+                            tags['\xa9ART'] = artist
+                            tags['\xa9alb'] = album
+                            tags['trkn'] = [(number, len(selected))]
+                            if year:
+                                tags['\xa9day'] = year
+                            if self.cover_bytes:
+                                if self.cover_bytes.startswith(b'\x89PNG\r\n\x1a\n'):
+                                    cover_format = MP4Cover.FORMAT_PNG
+                                else:
+                                    cover_format = MP4Cover.FORMAT_JPEG
+                                tags['covr'] = [MP4Cover(self.cover_bytes, imageformat=cover_format)]
+                            tags.save()
+                        except Exception as tag_exc:
+                            self.set_status(f'M4A erstellt, aber Metadaten konnten nicht vollständig geschrieben werden: {tag_exc}')
+                    if need_mp3 and not mp3_done:
+                        self.set_status(f'Kodiere Titel {number:02d} ({index}/{total}) zu MP3 …')
+                        partial_mp3 = out_mp3.with_name(out_mp3.name + '.part')
+                        try:
+                            partial_mp3.unlink(missing_ok=True)
+                            enc = self._run_cancellable(['lame', '-b', bitrate, str(source_wav), str(partial_mp3)], timeout=300)
+                            if enc is None:
+                                raise RuntimeError('Rippen abgebrochen.')
+                            if enc.returncode != 0 or not partial_mp3.exists() or partial_mp3.stat().st_size == 0:
+                                raise RuntimeError(f'MP3-Kodierung von Titel {number} fehlgeschlagen: {(enc.stderr or enc.stdout)[-400:]}')
+                            partial_mp3.replace(out_mp3)
+                        finally:
+                            partial_mp3.unlink(missing_ok=True)
+                        try:
+                            tags = ID3()
+                            tags.add(TIT2(encoding=3, text=title))
+                            tags.add(TPE1(encoding=3, text=artist))
+                            tags.add(TALB(encoding=3, text=album))
+                            tags.add(TRCK(encoding=3, text=str(number)))
+                            if year: tags.add(TDRC(encoding=3, text=year))
+                            if self.cover_bytes:
+                                mime = 'image/png' if self.cover_bytes.startswith(b'\x89PNG\r\n\x1a\n') else ('image/webp' if self.cover_bytes.startswith(b'RIFF') and self.cover_bytes[8:12] == b'WEBP' else 'image/jpeg')
+                                tags.add(APIC(encoding=3, mime=mime, type=3, desc='Cover', data=self.cover_bytes))
+                            tags.save(out_mp3)
+                        except Exception as tag_exc:
+                            self.set_status(f'MP3 erstellt, aber ID3-Tags konnten nicht vollständig geschrieben werden: {tag_exc}')
                     GLib.idle_add(self.progress.set_fraction, index / total)
             if self.cancel_requested.is_set():
-                self.set_status(f'Abgebrochen. Fertige MP3-Dateien bleiben erhalten: {album_dir}')
+                self.set_status(f'Abgebrochen. Bereits fertige Ausgabedateien bleiben erhalten: {album_dir}')
             else:
                 if create_m3u:
                     # Create the playlist only after ripping has finished, so it never interferes
@@ -1542,16 +1645,17 @@ class LunaRipper(Gtk.Application):
                     for track in selected:
                         number = int(track['number'])
                         title = track.get('title') or f'Titel {number:02d}'
-                        mp3_path = album_dir / f'{number:02d} - {clean_name(title, f"Titel {number:02d}")}.mp3'
-                        if mp3_path.is_file() and mp3_path.stat().st_size > 0:
-                            playlist_tracks.append(mp3_path.name)
+                        preferred_ext = '.mp3' if 'mp3' in set(output_format.split('_')) else ('.ogg' if 'ogg' in set(output_format.split('_')) else ('.m4a' if 'm4a' in set(output_format.split('_')) else '.wav'))
+                        audio_path = album_dir / f'{number:02d} - {clean_name(title, f"Titel {number:02d}")}{preferred_ext}'
+                        if audio_path.is_file() and audio_path.stat().st_size > 0:
+                            playlist_tracks.append(audio_path.name)
                     if playlist_tracks:
                         playlist_path = album_dir / f'{clean_name(album)}.m3u'
                         playlist_path.write_text('#EXTM3U\n' + ''.join(name + '\n' for name in playlist_tracks), encoding='utf-8')
                 self.set_status(f'Fertig! Dateien gespeichert in: {album_dir}')
         except Exception as exc:
             if self.cancel_requested.is_set():
-                self.set_status('Rippen abgebrochen. Bereits fertige MP3-Dateien bleiben erhalten.')
+                self.set_status('Rippen abgebrochen. Bereits fertige Ausgabedateien bleiben erhalten.')
             else:
                 self.set_status(f'Fehler: {exc}')
         finally:

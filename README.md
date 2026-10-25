@@ -1,10 +1,6 @@
-# LunaRipper 0.3.4
+# LunaRipper 0.3.5
 
-LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für die Oberfläche, `cdparanoia` zum Auslesen der Audio-CD und LAME zur MP3-Erstellung.
-
-![LunaRipper](lunaripper.png)
-
-[Github Seite](https://github.com/Angonikro/LunaRipper/)
+LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für die Oberfläche, `cdparanoia` zum Auslesen der Audio-CD, LAME zur MP3-Erstellung, `oggenc` aus `vorbis-tools` für OGG Vorbis und `ffmpeg` mit AAC-Unterstützung für M4A. WAV wird direkt aus den ausgelesenen CD-Audiodaten übernommen. Die Ausgabeauswahl enthält MP3, OGG, M4A, WAV und die gewünschten Kombinationen.
 
 ## Funktionen
 
@@ -14,6 +10,8 @@ LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für di
 - Einzelne Titel oder alle Titel einer Audio-CD rippen
 - Optional per Kontrollkästchen eine M3U-Playlist im Albumordner erstellen; standardmäßig deaktiviert und erst nach dem Rippen geschrieben
 - CD in einem zusammenhängenden Lesevorgang auslesen, statt `cdparanoia` für jeden Titel neu zu starten
+- Ausgabeformat MP3, OGG, M4A, WAV oder Kombinationen auswählen; die Auswahl wird gespeichert
+- OGG Vorbis mit `oggenc` sowie M4A/AAC mit `ffmpeg` erzeugen und Titel-, Interpret-, Album-, Tracknummer- und Jahres-Metadaten schreiben
 - MP3-Qualität mit 320, 256 oder 192 kbit/s auswählen
 - CD-Informationen automatisch über CDDB abfragen, sofern ein passender Eintrag vorhanden und der Dienst erreichbar ist
 - Albumdaten manuell eingeben und Metadaten über MusicBrainz suchen
@@ -23,19 +21,19 @@ LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für di
 - Zielordner über einen Ordnerdialog auswählen
 - Album in einem einzigen Ordner `Interpret - Albumtitel` speichern
 - Lesefehler-Einstellungen mit zusätzlichen Leseversuchen und optionalem Rettungsversuch
-- Vorhandene MP3-Dateien nicht überschreiben
+- Vorhandene Ausgabedateien nicht überschreiben
 - MP3-Dateien direkt unter dem endgültigen Dateinamen erstellen; keine zusätzliche temporäre MP3-Datei und kein Hardlink-Schritt
 - Musik-Zielordner automatisch ermitteln, bevorzugt anhand der XDG-Musikordner-Einstellung
 
 ## Voraussetzungen
 
-Vorgesehen für Debian 13 und Raspberry Pi OS mit Desktop. Benötigt werden Python 3, GTK 4, PyGObject, Mutagen, `cdparanoia`, `cd-discid` und LAME.
+Vorgesehen für Debian 13 und Raspberry Pi OS mit Desktop. Benötigt werden Python 3, GTK 4, PyGObject, Mutagen, `cdparanoia`, `cd-discid`, LAME, `eject`, `vorbis-tools` (stellt `oggenc` bereit) und `ffmpeg` (stellt den AAC-Encoder für M4A bereit).
 
 Installation der Abhängigkeiten:
 
 ```bash
 sudo apt update
-sudo apt install python3 python3-gi gir1.2-gtk-4.0 python3-mutagen cdparanoia cd-discid lame eject
+sudo apt install python3 python3-gi gir1.2-gtk-4.0 python3-mutagen cdparanoia cd-discid lame eject vorbis-tools ffmpeg
 ```
 
 Alternativ im Projektordner:
@@ -81,7 +79,7 @@ MusicBrainz wird für die Suche anhand manuell eingegebener Interpret- und Album
 
 ## Rippen und Lesefehler
 
-Beim Rippen liest `cdparanoia` die CD in einem zusammenhängenden Vorgang aus. Anschließend werden die ausgewählten Titel in MP3 umgewandelt. Die Dauer hängt unter anderem von Laufwerk, CD-Zustand und eingestellten Wiederholungsversuchen ab.
+Beim Rippen liest `cdparanoia` die CD in einem zusammenhängenden Vorgang aus. Anschließend werden die ausgewählten Titel je nach Einstellung als MP3, OGG, M4A, WAV oder in der gewählten Kombination gespeichert. Bei WAV-Ausgabe wird das ausgelesene CD-Audio direkt übernommen; dafür ist kein zusätzlicher Encoder nötig. OGG wird mit `oggenc` aus `vorbis-tools` erstellt (Qualitätsstufe 6). M4A wird mit `ffmpeg` und dem AAC-Encoder mit 192 kbit/s erstellt. `vorbis-tools` und `ffmpeg` sind Laufzeitabhängigkeiten des DEB-Pakets und werden bei Installation über APT automatisch mitinstalliert. Die Dauer hängt unter anderem von Laufwerk, CD-Zustand und eingestellten Wiederholungsversuchen ab.
 
 Unter **Einstellungen → Lesefehler** können zusätzliche Leseversuche eingestellt werden. Die Option **Lesefehler ignorieren** ist standardmäßig ausgeschaltet. Ist sie aktiviert, kann LunaRipper nach fehlgeschlagenen normalen Leseversuchen einen weniger strengen Rettungsversuch starten. Dabei können beschädigte oder fehlende Audiodaten entstehen. Wenn das Laufwerk selbst nicht mehr reagiert, kann auch der Rettungsversuch scheitern.
 
@@ -89,6 +87,4 @@ Unter **Einstellungen → Lesefehler** können zusätzliche Leseversuche eingest
 
 - Eine Audio-CD muss eingelegt sein.
 - Der angemeldete Benutzer benötigt gegebenenfalls Berechtigungen für den Zugriff auf das optische Laufwerk.
-- Vorhandene MP3-Dateien werden nicht überschrieben.
-
-73 de DO2QG Andreas
+- Vorhandene Ausgabedateien werden nicht überschrieben.

@@ -1,3 +1,14 @@
+lunaripper (0.3.5) unstable; urgency=medium
+
+  * Add OGG Vorbis output and all requested combinations of MP3, OGG, and WAV.
+  * Set output selection order to MP3, OGG, WAV, OGG + WAV, MP3 + WAV, MP3 + OGG, MP3 + WAV + OGG.
+  * Add vorbis-tools as a dependency and document installation.
+  * Add M4A/AAC output via ffmpeg and the approved output format order.
+  * Document ffmpeg as an automatic Debian package dependency.
+  * Save the selected output format in user settings and create M3U playlists using the preferred available format.
+
+ -- LunaRipper contributors  Sun, 25 Oct 2026 21:45:00 +0100
+
 lunaripper (0.3.4) unstable; urgency=medium
 
   * Add a working desktop launcher that references the installed or bundled LunaRipper icon.
