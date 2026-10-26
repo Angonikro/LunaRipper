@@ -1,3 +1,11 @@
+lunaripper (0.3.6) unstable; urgency=medium
+
+  * Modernized the dark GTK theme with rounded sections, improved spacing, and clearer blue accents.
+  * Adjusted default window height and vertical spacing so bottom controls remain visible on shorter displays; kept package version at 0.3.6.
+  * Kept ripping, metadata, cover selection, output formats, and saved settings behavior unchanged.
+
+ -- LunaRipper contributors  Mon, 26 Oct 2026 16:20:00 +0100
+
 lunaripper (0.3.5) unstable; urgency=medium
 
   * Add OGG Vorbis output and all requested combinations of MP3, OGG, and WAV.

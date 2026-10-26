@@ -19,12 +19,12 @@ from mutagen.id3 import ID3, TIT2, TPE1, TALB, TRCK, TDRC, APIC
 from mutagen.oggvorbis import OggVorbis
 from mutagen.mp4 import MP4, MP4Cover
 
-APP_VERSION = '0.3.5'
-USER_AGENT = 'LunaRipper/0.3.5 (GTK audio CD ripper)'
+APP_VERSION = '0.3.6'
+USER_AGENT = 'LunaRipper/0.3.6 (GTK audio CD ripper)'
 
 TRANSLATIONS = {
     'en': {
-        'Audio-CDs auslesen · Metadaten · Cover · MP3': 'Rip audio CDs · metadata · cover art · MP3',
+        'Audio-CDs auslesen · Metadaten · Cover · MP3 · M4A · OGG · WAV': 'Rip audio CDs · metadata · cover art · MP3 · M4A · OGG · WAV',
         'Audio-CD': 'Optical drive', 'Laufwerk:': 'Drive:', 'noch nicht eingelesen': 'not scanned yet',
         'CD einlesen': 'Read disc', 'Laufwerk suchen': 'Refresh drives', 'CD auswerfen': 'Eject CD', 'Albumdaten': 'Album information',
         'Interpret': 'Artist', 'Albumtitel': 'Album title', 'Jahr': 'Year',
@@ -278,6 +278,44 @@ class LunaRipper(Gtk.Application):
                 window.lunaripper-dark button.suggested-action { background-color: #245b9e; background-image: none; color: #ffffff; }
                 window.lunaripper-dark button:disabled { color: #a9adb4; }
 
+                /* LunaRipper 0.3.6 -- polished midnight-blue visual system */
+                window.lunaripper-dark { background-color: #0b1424; color: #eaf2ff; }
+                window.lunaripper-dark label { color: #eaf2ff; }
+                window.lunaripper-dark .dim-label { color: #9aacc5; }
+                window.lunaripper-dark frame { border: 1px solid #263f61; border-radius: 13px; padding: 5px; background-color: #101e33; }
+                window.lunaripper-dark frame > label { color: #91c5ff; font-weight: 700; padding: 0 7px; }
+                window.lunaripper-dark entry, window.lunaripper-dark dropdown,
+                window.lunaripper-dark dropdown button, window.lunaripper-dark spinbutton {
+                    background-color: #172841; color: #f4f8ff; border: 1px solid #385779;
+                    border-radius: 8px; min-height: 34px; padding-left: 9px; padding-right: 9px;
+                }
+                window.lunaripper-dark entry:focus, window.lunaripper-dark dropdown:focus,
+                window.lunaripper-dark spinbutton:focus { border-color: #4da5ff; }
+                window.lunaripper-dark button, window.lunaripper-dark menubutton > button {
+                    background-image: none; background-color: #1a2c45; color: #edf5ff;
+                    border: 1px solid #385779; border-radius: 9px; padding: 7px 12px;
+                    min-height: 32px; font-weight: 500;
+                }
+                window.lunaripper-dark button:hover, window.lunaripper-dark menubutton > button:hover {
+                    background-color: #243f60; border-color: #559de7;
+                }
+                window.lunaripper-dark button:active { background-color: #173b68; }
+                window.lunaripper-dark button.suggested-action {
+                    background-image: none; background-color: #1769d2; color: #ffffff;
+                    border: 1px solid #5ca9ff; border-radius: 10px; font-weight: 700;
+                }
+                window.lunaripper-dark button.suggested-action:hover { background-color: #2581ef; }
+                window.lunaripper-dark checkbutton check { border-radius: 5px; }
+                window.lunaripper-dark scrolledwindow { background-color: #0d192b; border: 1px solid #243b59; border-radius: 9px; }
+                window.lunaripper-dark list, window.lunaripper-dark row,
+                window.lunaripper-dark textview, window.lunaripper-dark textview text { background-color: #0d192b; color: #eaf2ff; }
+                window.lunaripper-dark row { padding: 3px 5px; border-radius: 5px; }
+                window.lunaripper-dark row:selected { background-color: #174f91; }
+                window.lunaripper-dark progressbar trough { background-color: #1c2b40; border-radius: 6px; min-height: 8px; }
+                window.lunaripper-dark progressbar progress { background-color: #3c9cff; border-radius: 6px; }
+                window.lunaripper-dark scrollbar slider { background-color: #45678d; border-radius: 8px; }
+                window.lunaripper-dark picture { border-radius: 9px; }
+
                 window.lunaripper-light { background-color: #f7f7f7; color: #202124; }
                 window.lunaripper-light label, window.lunaripper-light checkbutton,
                 window.lunaripper-light checkbutton label, window.lunaripper-light radiobutton,
@@ -344,11 +382,11 @@ class LunaRipper(Gtk.Application):
 
     def build_ui(self):
         self.window = Gtk.ApplicationWindow(application=self, title=f'LunaRipper {APP_VERSION}')
-        self.window.set_default_size(1050, 820)
-        self.window.set_size_request(800, 650)
+        self.window.set_default_size(960, 690)
+        self.window.set_size_request(800, 580)
 
-        outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-        outer.set_margin_top(16); outer.set_margin_bottom(16); outer.set_margin_start(18); outer.set_margin_end(18)
+        outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        outer.set_margin_top(10); outer.set_margin_bottom(10); outer.set_margin_start(12); outer.set_margin_end(12)
         self.window.set_child(outer)
         self.apply_theme()
 
@@ -421,7 +459,7 @@ class LunaRipper(Gtk.Application):
         titlebox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
         title = Gtk.Label(label='🌙 LunaRipper')
         title.add_css_class('title-1'); title.set_halign(Gtk.Align.START)
-        subtitle = Gtk.Label(label=self.tr('Audio-CDs auslesen · Metadaten · Cover · MP3'))
+        subtitle = Gtk.Label(label=self.tr('Audio-CDs auslesen · Metadaten · Cover · MP3 · M4A · OGG · WAV'))
         subtitle.add_css_class('dim-label'); subtitle.set_halign(Gtk.Align.START)
         titlebox.append(title); titlebox.append(subtitle); header.append(titlebox)
         header.append(Gtk.Box(hexpand=True))
@@ -482,7 +520,7 @@ class LunaRipper(Gtk.Application):
         tracks_box.set_margin_top(8); tracks_box.set_margin_bottom(8); tracks_box.set_margin_start(8); tracks_box.set_margin_end(8)
         self.track_list = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
         self.track_list.append(Gtk.Label(label=self.tr('Lies zuerst eine Audio-CD ein.')))
-        scroller = Gtk.ScrolledWindow(); scroller.set_vexpand(True); scroller.set_min_content_height(170); scroller.set_child(self.track_list)
+        scroller = Gtk.ScrolledWindow(); scroller.set_vexpand(True); scroller.set_min_content_height(90); scroller.set_child(self.track_list)
         tracks_box.append(scroller)
         selection_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         self.select_all_button = Gtk.Button(label=self.tr('Alle auswählen')); self.select_all_button.connect('clicked', lambda *_: self.set_all_tracks(True))

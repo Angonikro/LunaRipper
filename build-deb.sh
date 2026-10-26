@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-VERSION=0.3.5
+VERSION=0.3.6
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT

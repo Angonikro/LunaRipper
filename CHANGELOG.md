@@ -1,3 +1,10 @@
+## 0.3.6
+
+- Modernisiertes dunkles GTK-Design mit abgerundeten Bereichen, besserer Abstandsführung und klareren blauen Akzenten.
+- Standard-Fenstergröße verkleinert, damit die untere Ausgabe- und Rippenleiste auf kleineren Arbeitsflächen besser sichtbar bleibt.
+- Titelliste bleibt scrollbar; Rippen, Metadaten, Coverauswahl, Ausgabeformate und gespeicherte Einstellungen bleiben erhalten.
+- README, Debian-Paketinformationen und Release-Dokumentation auf 0.3.6 abgestimmt.
+
 ## 0.3.5
 
 - Ausgabeauswahl in der bestätigten Reihenfolge: MP3, OGG, M4A, WAV, OGG + WAV, MP3 + WAV, M4A + WAV, MP3 + OGG, OGG + M4A, MP3 + M4A, MP3 + WAV + OGG, OGG + WAV + M4A, MP3 + WAV + M4A, MP3 + OGG + M4A, MP3 + OGG + WAV + M4A.
@@ -9,6 +16,7 @@
 - Ausgabeformat MP3, WAV oder MP3 + WAV hinzugefügt; Auswahl wird in den Einstellungen gespeichert.
 - WAV-Dateien werden ohne zusätzlichen Encoder aus dem CD-Audio-Ausleseergebnis übernommen.
 - M3U-Playlist verwendet bei WAV-Ausgabe WAV-Dateien, sonst MP3-Dateien.
+- Keine neuen Software-Abhängigkeiten.
 
 ## 0.3.4
 - Desktop Launcher hinzugefügt
