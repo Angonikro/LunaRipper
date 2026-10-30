@@ -32,6 +32,25 @@ LunaRipper dient zum Auslesen und Konvertieren von Audio-CDs, auf die du rechtm�
 - MP3-Dateien direkt unter dem endgültigen Dateinamen erstellen; keine zusätzliche temporäre MP3-Datei und kein Hardlink-Schritt
 - Musik-Zielordner automatisch ermitteln, bevorzugt anhand der XDG-Musikordner-Einstellung
 
+## CD-Laufwerk auswählen
+
+LunaRipper sucht automatisch nach optischen Laufwerken unter `/dev/sr*`. Das gefundene Laufwerk wird in der Auswahlliste der Anwendung angezeigt. Wird ein Laufwerk nach dem Anschließen oder Einlegen einer CD nicht angezeigt, **Aktualisieren** anklicken.
+
+Normalerweise muss dafür nichts in `lunaripper.py` geändert werden. Nur bei einer ungewöhnlichen Geräte-Konfiguration, die nicht unter `/dev/sr*` erscheint, wäre eine Anpassung des Programms nötig.
+
+## Metadaten und Cover
+
+Die automatische CD-Erkennung verwendet das CDDB-kompatible Protokoll. Ein Treffer ist nicht für jede CD garantiert. Die Verbindung kann außerdem von der Erreichbarkeit des Servers und den in den CDDB-Einstellungen hinterlegten Werten abhängen.
+
+MusicBrainz wird für die Suche anhand manuell eingegebener Interpret- und Albumdaten verwendet. Cover werden über das Cover Art Archive gesucht und vor dem Übernehmen zur Auswahl angezeigt. Eine Internetverbindung ist für diese Funktionen erforderlich.
+
+## Rippen und Lesefehler
+
+Beim Rippen liest `cdparanoia` die CD in einem zusammenhängenden Vorgang aus. Anschließend werden die ausgewählten Titel je nach Einstellung als MP3, OGG, M4A, WAV oder in der gewählten Kombination gespeichert. Bei WAV-Ausgabe wird das ausgelesene CD-Audio direkt übernommen; dafür ist kein zusätzlicher Encoder nötig. OGG wird mit `oggenc` aus `vorbis-tools` erstellt (Qualitätsstufe 6). M4A wird mit `ffmpeg` und dem AAC-Encoder mit 192 kbit/s erstellt. `vorbis-tools` und `ffmpeg` sind Laufzeitabhängigkeiten des DEB-Pakets und werden bei Installation über APT automatisch mitinstalliert. Die Dauer hängt unter anderem von Laufwerk, CD-Zustand und eingestellten Wiederholungsversuchen ab.
+
+Unter **Einstellungen → Lesefehler** können zusätzliche Leseversuche eingestellt werden. Die Option **Lesefehler ignorieren** ist standardmäßig ausgeschaltet. Ist sie aktiviert, kann LunaRipper nach fehlgeschlagenen normalen Leseversuchen einen weniger strengen Rettungsversuch starten. Dabei können beschädigte oder fehlende Audiodaten entstehen. Wenn das Laufwerk selbst nicht mehr reagiert, kann auch der Rettungsversuch scheitern.
+
+
 ## Neu in Version 0.3.6
 
 - Dunkles Design mit abgerundeten Bereichen, klareren blauen Akzenten und verbesserten Abständen.
@@ -79,24 +98,6 @@ Das Skript legt `LunaRipper.desktop` auf dem Desktop an und verweist auf das mit
 ```bash
 lunaripper-desktop-launcher
 ```
-
-## CD-Laufwerk auswählen
-
-LunaRipper sucht automatisch nach optischen Laufwerken unter `/dev/sr*`. Das gefundene Laufwerk wird in der Auswahlliste der Anwendung angezeigt. Wird ein Laufwerk nach dem Anschließen oder Einlegen einer CD nicht angezeigt, **Aktualisieren** anklicken.
-
-Normalerweise muss dafür nichts in `lunaripper.py` geändert werden. Nur bei einer ungewöhnlichen Geräte-Konfiguration, die nicht unter `/dev/sr*` erscheint, wäre eine Anpassung des Programms nötig.
-
-## Metadaten und Cover
-
-Die automatische CD-Erkennung verwendet das CDDB-kompatible Protokoll. Ein Treffer ist nicht für jede CD garantiert. Die Verbindung kann außerdem von der Erreichbarkeit des Servers und den in den CDDB-Einstellungen hinterlegten Werten abhängen.
-
-MusicBrainz wird für die Suche anhand manuell eingegebener Interpret- und Albumdaten verwendet. Cover werden über das Cover Art Archive gesucht und vor dem Übernehmen zur Auswahl angezeigt. Eine Internetverbindung ist für diese Funktionen erforderlich.
-
-## Rippen und Lesefehler
-
-Beim Rippen liest `cdparanoia` die CD in einem zusammenhängenden Vorgang aus. Anschließend werden die ausgewählten Titel je nach Einstellung als MP3, OGG, M4A, WAV oder in der gewählten Kombination gespeichert. Bei WAV-Ausgabe wird das ausgelesene CD-Audio direkt übernommen; dafür ist kein zusätzlicher Encoder nötig. OGG wird mit `oggenc` aus `vorbis-tools` erstellt (Qualitätsstufe 6). M4A wird mit `ffmpeg` und dem AAC-Encoder mit 192 kbit/s erstellt. `vorbis-tools` und `ffmpeg` sind Laufzeitabhängigkeiten des DEB-Pakets und werden bei Installation über APT automatisch mitinstalliert. Die Dauer hängt unter anderem von Laufwerk, CD-Zustand und eingestellten Wiederholungsversuchen ab.
-
-Unter **Einstellungen → Lesefehler** können zusätzliche Leseversuche eingestellt werden. Die Option **Lesefehler ignorieren** ist standardmäßig ausgeschaltet. Ist sie aktiviert, kann LunaRipper nach fehlgeschlagenen normalen Leseversuchen einen weniger strengen Rettungsversuch starten. Dabei können beschädigte oder fehlende Audiodaten entstehen. Wenn das Laufwerk selbst nicht mehr reagiert, kann auch der Rettungsversuch scheitern.
 
 ## Hinweise
 
