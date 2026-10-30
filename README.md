@@ -6,6 +6,9 @@ LunaRipper ist ein Audio-CD-Ripper für Linux. Die Anwendung nutzt GTK 4 für di
 
 [Github Seite](https://github.com/Angonikro/LunaRipper/)
 
+**Rechtmäßige Nutzung:** 
+LunaRipper dient zum Auslesen und Konvertieren von Audio-CDs, auf die du rechtmäßig zugreifen darfst. Verwende die Anwendung nur im Einklang mit dem geltenden Urheberrecht. LunaRipper stellt keine Funktion zum Umgehen technischer Kopierschutzmaßnahmen bereit.
+
 ## Funktionen
 
 - Optische Laufwerke unter `/dev/sr*` automatisch erkennen, zum Beispiel `/dev/sr0` oder `/dev/sr1
